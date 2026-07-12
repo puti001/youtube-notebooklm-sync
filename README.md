@@ -52,3 +52,36 @@ python youtube_channel_sync.py --channel-url "<CHANNEL_URL>" --notebook-id "<NOT
 1. 輸入觸發詞：**`同步頻道講義`**。
 2. 提供頻道 URL、筆記本 ID、日期範圍。
 3. Agent 會自動執行 `youtube_channel_sync.py` 獲取逐字稿，然後自動套用【課程技術紀錄官】Prompt 進行講義轉換，並同步寫入本地 Obsidian 與 NotebookLM 筆記本中。
+
+---
+
+## ⚠️ 開發踩坑與解決之道 (Troubleshooting & Tips)
+
+當其他 Agent 或開發者維護此專案時，請特別注意以下在開發過程中踩過的坑與其對應的解決方案：
+
+### 1. NotebookLM API 參數順序陷阱
+* **問題**：`add_text_source` 的底層 Method 定義為 `(notebook_id, text, title)`（內容在前，標題在後），而非直覺的 `(notebook_id, title, content)`。若不慎傳反，會導致整篇講義內容被當作標題，上傳後網頁端內容顯示為空。
+* **解決**：在呼叫 API 時，一律強制使用具名參數（Keyword Arguments），以防順序混淆：
+  ```python
+  client.add_text_source(notebook_id, text=content, title=title, wait=True)
+  ```
+
+### 2. nlm CLI 憑證 (Cookie) 儲存路徑
+* **問題**：`notebooklm-tools` 與 `nlm` CLI 工具載入憑證的真實路徑為：
+  `C:\Users\<Username>\.notebooklm-mcp-cli\profiles\default\cookies.json`
+  而非 Python 庫 site-packages 目錄下。若要以程式碼手動更新或匯入 Google Cookie，直接寫入庫目錄將無任何效果。
+* **解決**：應使用庫中內建的 `AuthManager` 來進行安全的 Profile 寫入，它會自動建立設定檔並重設 metadata：
+  ```python
+  from notebooklm_tools.core.auth import AuthManager
+  manager = AuthManager('default')
+  manager.save_profile(cookies, force=True)
+  ```
+
+### 3. GitHub CLI (gh) 認證被無效環境變數卡死
+* **問題**：如果當前終端機 session 中存在一個過期或無效的環境變數 `GITHUB_TOKEN`，`gh` 工具會優先讀取它而報錯 `The token in GITHUB_TOKEN is invalid`，即使你本機已經透過 `gh auth login` 登入過也無效。
+* **解決**：在執行 `gh repo create` 或 `gh auth status` 之前，先於環境中手動清除該變數（例如在 PowerShell 下執行 `Remove-Item Env:\GITHUB_TOKEN`）。
+
+### 4. 影片無法匯入或 NotebookLM 轉譯暫時性失敗
+* **問題**：有些 YouTube 影片上傳至 NotebookLM 雲端時，會因為轉譯逾時或版權問題，導致 API 下載逐字稿時返回 `NOT_FOUND` 或來源為空白。
+* **解決**：實作「本地字幕下載優先」機制。使用 `yt-dlp` 下載 `zh-TW` 的 VTT 字幕，並利用 Python 進行重複字幕段落與時間戳清洗，大約 1 秒內即可完成；只有在影片完全沒有字幕時，才 fallback 採用 NotebookLM 語音轉譯。
+
