@@ -51,7 +51,10 @@ python youtube_channel_sync.py --channel-url "<CHANNEL_URL>" --notebook-id "<NOT
 若你使用 `Antigravity`、`OpenCode` 或其他支援 Agent，可直接在對話中啟用本工作流：
 1. 輸入觸發詞：**`同步頻道講義`**。
 2. 提供頻道 URL、筆記本 ID、日期範圍。
-3. Agent 會自動執行 `youtube_channel_sync.py` 獲取逐字稿，然後自動套用【課程技術紀錄官】Prompt 進行講義轉換，並同步寫入本地 Obsidian 與 NotebookLM 筆記本中。
+3. Agent 會自動執行 `youtube_channel_sync.py` 獲取逐字稿，然後：
+   - 轉換生成「操作講義」：存為 `[影片標題].md`
+   - 轉換生成「15頁簡報大綱」：存為 `簡報大綱-[影片標題].md`（使用 `簡報大綱-` 前綴方便在資料夾中歸類）。
+   - 將講義與簡報大綱同步上傳至你的 NotebookLM 筆記本中當作 Note 來源。
 
 ---
 
