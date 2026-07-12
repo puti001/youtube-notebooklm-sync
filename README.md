@@ -46,6 +46,18 @@ python upload_outlines.py
 ```
 * **功能**：掃描本地知識庫中開頭為 `簡報大綱-` 的檔案，自動清理雲端筆記本中結尾為 `_簡報大綱` 的舊來源，並覆蓋上傳最新的中文生圖大綱 Note。
 
+### 3. 批次觸發簡報生成 (`generate_slides.py`)
+```bash
+python generate_slides.py
+```
+* **功能**：以每 3 分鐘為間隔，依序觸發 NotebookLM Studio 為各個講義自動生成簡報 (Slide Deck)。
+* **來源組合**：每個簡報由四個來源組合觸發——`簡報大綱 Note` + `GiGi 機器人設定圖` + `Puti 老師設定圖` + `手繪外框示範圖`。
+* **設定方式**：直接編輯腳本頂部的四個設定區塊（`NOTEBOOK_ID`、`IP_SOURCE_IDS`、`JOBS`、`INTERVAL_SECONDS`）即可。
+* **取得 Source ID**：執行 `upload_outlines.py` 上傳大綱後，從終端機輸出中複製各來源的 `Source ID`。
+
+> [!TIP]
+> 每個 Slide Deck 的生成約需 2～5 分鐘不等，3 分鐘的間隔設計可避免被 NotebookLM 的後台速率限制卡死。
+
 ---
 
 ## 🤖 AI Agent 簡報大綱生成 SOP Prompt
