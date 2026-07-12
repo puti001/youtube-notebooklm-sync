@@ -4,12 +4,34 @@ venv/
 __pycache__/
 *.pyc
 
-# 忽略本機暫存資料
+# 忽略本機暫存與個人資料
 youtube_transcripts/
 .env
+cookies.json
+notebooklm_transcripts/
+recovered_files_temp/
+flipedu_notebooklm_articles/
 
-# 忽略個人的 Obsidian 知識庫講義
+# 忽略本地輔助網頁與臨時腳本
+static/
+server.py
+restart_server.py
+clean_transcript.py
+啟動與重啟工具.bat
+"新增 文字文件.txt"
+簡報檔/
+scratch/
+
+# 忽略個人 Obsidian 知識庫講義
 知識庫/
+
+# 忽略非專案核心的 Markdown 與圖檔
+*.md
+!README.md
+*.png
+*.jpg
+*.jpeg
+*.pptx
 
 # 忽略系統與 IDE 暫存檔
 .idea/
