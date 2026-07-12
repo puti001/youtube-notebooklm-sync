@@ -1,0 +1,18 @@
+# 忽略 Python 虛擬環境與快取
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# 忽略本機暫存資料
+youtube_transcripts/
+.env
+
+# 忽略個人的 Obsidian 知識庫講義
+知識庫/
+
+# 忽略系統與 IDE 暫存檔
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
