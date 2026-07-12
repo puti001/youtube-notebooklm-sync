@@ -85,3 +85,20 @@ python youtube_channel_sync.py --channel-url "<CHANNEL_URL>" --notebook-id "<NOT
 * **問題**：有些 YouTube 影片上傳至 NotebookLM 雲端時，會因為轉譯逾時或版權問題，導致 API 下載逐字稿時返回 `NOT_FOUND` 或來源為空白。
 * **解決**：實作「本地字幕下載優先」機制。使用 `yt-dlp` 下載 `zh-TW` 的 VTT 字幕，並利用 Python 進行重複字幕段落與時間戳清洗，大約 1 秒內即可完成；只有在影片完全沒有字幕時，才 fallback 採用 NotebookLM 語音轉譯。
 
+### 5. nlm login 無法彈出瀏覽器授權視窗 (救磚方案)
+* **問題**：在某些系統環境、虛擬主機或權限限制下，執行 `nlm login` 可能會卡死，完全無法順利彈出 Google Chrome 登入授權視窗。
+* **解決**：可以手動至瀏覽器打開 NotebookLM 並登入 Google 帳號，使用瀏覽器擴充套件（如 EditThisCookie、Get Cookies.txt）匯出該網頁的所有 Cookies JSON 格式，然後透過以下 Python 程式直接寫入憑證設定檔，即可成功強行登入：
+  ```python
+  import json
+  from notebooklm_tools.core.auth import AuthManager
+  
+  # 載入從瀏覽器擴充套件匯出的 cookie json
+  with open("your_exported_cookies.json", "r", encoding="utf-8") as f:
+      cookies = json.load(f)
+      
+  # 強制寫入 nlm 的 default profile 中
+  manager = AuthManager('default')
+  manager.save_profile(cookies, force=True)
+  print("強行登入成功！")
+  ```
+
