@@ -25,9 +25,14 @@ scratch/
 # 忽略個人 Obsidian 知識庫講義
 知識庫/
 
+# 允許追蹤 .agents 目錄下的自訂技能與設定
+!.agents/
+
+
 # 忽略非專案核心的 Markdown 與圖檔
 *.md
 !README.md
+!.agents/**/*.md
 *.png
 *.jpg
 *.jpeg
