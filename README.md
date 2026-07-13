@@ -6,13 +6,14 @@
 
 ## 🌟 核心特色
 1. **本機極速字幕下載優先**：預設利用 `yt-dlp` 下載影片的 `zh-TW` 字幕，在 1 秒內完成本機文字清洗去重，不需等待雲端語音轉譯。
-2. **NotebookLM 雲端轉譯備援 (Fallback)**：若影片完全無字幕，自動將影片 URL 上傳至 NotebookLM 筆記本進行語音轉譯。
-3. **中文一體化生圖大綱生成**：提供 SOP Prompt，將逐字稿轉換為正好 15 頁、內建 Puti 老師與 GiGi 機器人同台互動分鏡、以及極簡手繪塗鴉生圖提示詞的 Markdown 大綱。
-4. **雙端命名 100% 一致**：
+2. **NotebookLM 雲端轉譯備援 (Fallback)**：若影片無字幕，自動將影片 URL 上傳至 NotebookLM 筆記本進行語音轉譯。
+3. **本機離線 Whisper 聽寫防線 (Ultimate Fallback)**：若 YouTube 字幕下載與 NotebookLM 雲端轉譯皆失效/額度用盡，自動下載影片音訊並動態呼叫本機 `faster-whisper` 或 `openai-whisper` 模型進行精準語音聽寫，完成完全本機自給自足的逐字稿生成。
+4. **中文一體化生圖大綱生成**：提供 SOP Prompt，將逐字稿轉換為正好 15 頁、內建 Puti 老師與 GiGi 機器人同台互動分鏡、以及極簡手繪塗鴉生圖提示詞的 Markdown 大綱。
+5. **雙端命名 100% 一致**：
    - 操作講義：`[影片標題].md`
    - 簡報大綱：`簡報大綱-[影片標題].md`
    - 上傳至 NotebookLM 的標題完全相同，無 YAML Frontmatter，方便排版。
-5. **獨立大綱上傳覆寫**：提供 `upload_outlines.py`，支援自動清理舊版 `_簡報大綱` 來源，並覆蓋上傳最新風格大綱 Note。
+6. **獨立大綱上傳覆寫**：提供 `upload_outlines.py`，支援自動清理舊版 `_簡報大綱` 來源，並覆蓋上傳最新風格大綱 Note。
 
 ---
 

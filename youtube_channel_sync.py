@@ -276,6 +276,7 @@ def main():
                     matched_src = src
                     break
                     
+        nlm_success = False
         if matched_src:
             print(f" 正在下載 NotebookLM 逐字稿：{title} -> {out_file}...")
             cmd = [args.nlm_path, "content", "source", matched_src['id'], "--output", out_file]
@@ -284,10 +285,93 @@ def main():
                 video['transcript_file'] = os.path.abspath(out_file)
                 final_results.append(video)
                 print(f" ➔ 成功從 NotebookLM 取得逐字稿並寫入：{out_file}")
+                nlm_success = True
             else:
                 print(f" ⚠️ 呼叫 NotebookLM 下載失敗 (exit code: {res.returncode}): {res.stderr.strip() or '未知錯誤'}")
         else:
-            print(f" ⚠️ 在 NotebookLM 中也找不到對應的來源，此影片無法擷取逐字稿。")
+            print(f" ⚠️ 在 NotebookLM 中也找不到對應的來源。")
+
+        # 3.3 終極本機救磚管道：使用本機 Whisper 進行語音聽寫
+        if not nlm_success:
+            print(" ➔ 啟動本機 Whisper 終極救磚防線...")
+            
+            # 檢查本機是否有安裝相關語音辨識庫
+            whisper_mode = None
+            try:
+                from faster_whisper import WhisperModel
+                whisper_mode = "faster_whisper"
+            except ImportError:
+                try:
+                    import whisper
+                    whisper_mode = "whisper"
+                except ImportError:
+                    pass
+            
+            if not whisper_mode:
+                print(" ⚠️ 本機尚未安裝 Whisper 語音辨識庫！")
+                print("    若要啟用此離線救磚防線，請在終端機執行：")
+                print("    pip install faster-whisper  或  pip install openai-whisper")
+                print("    目前跳過此影片。")
+                continue
+                
+            print(f" ➔ 偵測到本機 {whisper_mode} 庫。正在使用 yt-dlp 下載影片音訊...")
+            
+            # 下載原始音訊（不強求轉檔 mp3，防止本機沒有安裝 ffmpeg 導致報錯崩潰）
+            audio_opts = {
+                'format': 'bestaudio/best',
+                'outtmpl': os.path.join(args.output_dir, f"audio_{video_id}.%(ext)s"),
+                'quiet': True
+            }
+            
+            audio_file = None
+            try:
+                with yt_dlp.YoutubeDL(audio_opts) as ydl:
+                    ydl.download([f"https://www.youtube.com/watch?v={video_id}"])
+                
+                # 尋找下載下來的音訊檔案
+                for f in os.listdir(args.output_dir):
+                    if f.startswith(f"audio_{video_id}"):
+                        audio_file = os.path.join(args.output_dir, f)
+                        break
+            except Exception as e:
+                print(f" ⚠️ 下載影片音訊失敗: {e}")
+                
+            if audio_file and os.path.exists(audio_file):
+                print(f" ➔ 音訊下載成功: {audio_file}，開始使用本機 Whisper 進行語音聽寫轉譯...")
+                try:
+                    text_result = ""
+                    # 執行本機 Whisper 語音識別
+                    if whisper_mode == "faster_whisper":
+                        # 預設使用 base 模型（在 CPU 上執行效率與準確度最佳）
+                        model = WhisperModel("base", device="cpu", compute_type="int8")
+                        segments, info = model.transcribe(audio_file, beam_size=5, language="zh")
+                        text_result = "".join([segment.text for segment in segments])
+                    elif whisper_mode == "whisper":
+                        model = whisper.load_model("base")
+                        res = model.transcribe(audio_file, language="zh")
+                        text_result = res.get("text", "")
+                    
+                    if text_result.strip():
+                        # 清洗多餘空白並寫入檔案
+                        with open(out_file, 'w', encoding='utf-8') as f:
+                            f.write(text_result.strip())
+                        
+                        video['transcript_file'] = os.path.abspath(out_file)
+                        final_results.append(video)
+                        print(f" ➔ [Whisper 成功] 本機聽寫完成並寫入：{out_file}")
+                    else:
+                        print(" ⚠️ Whisper 聽寫結果為空。")
+                except Exception as e:
+                    print(f" ⚠️ 本機 Whisper 聽寫過程出錯: {e}")
+                finally:
+                    # 徹底刪除臨時音訊檔，不佔用硬碟空間
+                    if os.path.exists(audio_file):
+                        try:
+                            os.remove(audio_file)
+                        except Exception:
+                            pass
+            else:
+                print(" ⚠️ 找不到下載的臨時音訊檔案，無法進行本機轉譯。")
             
     # 4. 儲存結果 JSON
     results_json_path = os.path.join(args.output_dir, 'channel_sync_results.json')
