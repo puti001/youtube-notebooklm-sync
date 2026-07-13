@@ -38,15 +38,24 @@ nlm login
 ```bash
 python youtube_channel_sync.py --channel-url "<CHANNEL_URL>" --notebook-id "<NOTEBOOK_ID>" --start-date "<YYYY-MM-DD>"
 ```
-* **功能**：自動檢查指定日期後上傳的最新影片，優先下載本機字幕；無字幕時自動上傳 NotebookLM 轉譯，最終將逐字稿 text 檔儲存至 `youtube_transcripts/` 中。
+* **功能**：自動檢查指定日期後上傳的最新影片，並做兩件事：
+  1. **上傳影片 URL 至 NotebookLM 筆記本**（作為永久參考來源，已存在則略過）
+  2. **本機字幕優先下載**（`yt-dlp`，1 秒內完成）；無字幕時自動 fallback 至 NotebookLM 雲端語音轉譯。
 
-### 2. Style 簡報大綱上傳 (`upload_outlines.py`)
+### 2. 操作講義上傳 (`upload_lectures.py`)
+```bash
+python upload_lectures.py
+```
+* **功能**：掃描本地知識庫中的操作講義 `.md` 檔（不含 `簡報大綱-` 前綴），上傳至 NotebookLM 筆記本供日後快速閱讀，取代重看影片。
+* **去重**：同名來源已存在則自動略過；加上 `--overwrite` 參數可強制覆蓋重新上傳。
+
+### 3. Style 簡報大綱上傳 (`upload_outlines.py`)
 ```bash
 python upload_outlines.py
 ```
 * **功能**：掃描本地知識庫中開頭為 `簡報大綱-` 的檔案，自動清理雲端筆記本中結尾為 `_簡報大綱` 的舊來源，並覆蓋上傳最新的中文生圖大綱 Note。
 
-### 3. 批次觸發簡報生成 (`generate_slides.py`)
+### 4. 批次觸發簡報生成 (`generate_slides.py`)
 ```bash
 python generate_slides.py
 ```
@@ -57,6 +66,7 @@ python generate_slides.py
 
 > [!TIP]
 > 每個 Slide Deck 的生成約需 2～5 分鐘不等，3 分鐘的間隔設計可避免被 NotebookLM 的後台速率限制卡死。
+
 
 ---
 
