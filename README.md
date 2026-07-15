@@ -91,6 +91,31 @@ python generate_slides.py
 （貼上逐字稿）
 ```
 
+### Step 3 → 上傳講義與設定圖到 NotebookLM
+
+1. **執行講義上傳腳本**：
+   ```bash
+   python upload_lectures.py
+   ```
+   這會自動掃描本地 `知識庫/NotebookLM_講義/` 底下的講義 Markdown 檔，去重並上傳至 NotebookLM 筆記本。
+
+2. **確認 3 張風格與角色設定圖已在筆記本中**：
+   確保筆記本內已手動或透過腳本上傳這 3 張設定圖來源：
+   - `GiGi機器人設定圖.png`
+   - `puti老師設定圖.png`
+   - `Q版黑白手繪塗鴉風格設定圖.png`
+
+### Step 4 → 批次生成簡報 (直出模式)
+
+1. **設定任務清單**：
+   編輯 `generate_slides.py`，在 `JOBS` 區塊中填入「顯示名稱」與剛剛上傳的「操作講義 Note 的 Source ID」。
+2. **執行簡報批次生成**：
+   ```bash
+   python generate_slides.py
+   ```
+   腳本會以 3 分鐘為間隔，依序呼叫 NotebookLM API，直接選取該講義 Note 與上述 3 張設定圖共 4 個來源進行簡報 (Slide Deck) 觸發生成。
+
+---
 
 ## ⚠️ 開發踩坑與解決之道 (Troubleshooting & Tips)
 
