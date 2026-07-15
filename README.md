@@ -8,12 +8,10 @@
 1. **本機極速字幕下載優先**：預設利用 `yt-dlp` 下載影片的 `zh-TW` 字幕，在 1 秒內完成本機文字清洗去重，不需等待雲端語音轉譯。
 2. **NotebookLM 雲端轉譯備援 (Fallback)**：若影片無字幕，自動將影片 URL 上傳至 NotebookLM 筆記本進行語音轉譯。
 3. **本機離線 Whisper 聽寫防線 (Ultimate Fallback)**：若 YouTube 字幕下載與 NotebookLM 雲端轉譯皆失效/額度用盡，自動下載影片音訊並動態呼叫本機 `faster-whisper` 或 `openai-whisper` 模型進行精準語音聽寫，完成完全本機自給自足的逐字稿生成。
-4. **中文一體化生圖大綱生成**：提供 SOP Prompt，將逐字稿轉換為正好 15 頁、內建 Puti 老師與 GiGi 機器人同台互動分鏡、以及極簡手繪塗鴉生圖提示詞的 Markdown 大綱。
-5. **雙端命名 100% 一致**：
+4. **直出簡報生成**：直接使用操作講義配合風格與人物設定圖片生成簡報，無須額外生成大綱，流程最簡化、生成成功率更高。
+5. **命名 100% 一致**：
    - 操作講義：`[影片標題].md`
-   - 簡報大綱：`簡報大綱-[影片標題].md`
-   - 上傳至 NotebookLM 的標題完全相同，無 YAML Frontmatter，方便排版。
-6. **獨立大綱上傳覆寫**：提供 `upload_outlines.py`，支援自動清理舊版 `_簡報大綱` 來源，並覆蓋上傳最新風格大綱 Note。
+   - 上傳至 NotebookLM 的標題與影片完全一致，無 YAML Frontmatter，方便排版。
 
 ---
 
@@ -50,20 +48,14 @@ python upload_lectures.py
 * **功能**：掃描本地知識庫中的操作講義 `.md` 檔（不含 `簡報大綱-` 前綴），上傳至 NotebookLM 筆記本供日後快速閱讀，取代重看影片。
 * **去重**：同名來源已存在則自動略過；加上 `--overwrite` 參數可強制覆蓋重新上傳。
 
-### 3. Style 簡報大綱上傳 (`upload_outlines.py`)
-```bash
-python upload_outlines.py
-```
-* **功能**：掃描本地知識庫中開頭為 `簡報大綱-` 的檔案，自動清理雲端筆記本中結尾為 `_簡報大綱` 的舊來源，並覆蓋上傳最新的中文生圖大綱 Note。
-
-### 4. 批次觸發簡報生成 (`generate_slides.py`)
+### 3. 批次觸發簡報生成 (`generate_slides.py`)
 ```bash
 python generate_slides.py
 ```
 * **功能**：以每 3 分鐘為間隔，依序觸發 NotebookLM Studio 為各個講義自動生成簡報 (Slide Deck)。
-* **來源組合**：每個簡報由四個來源組合觸發——`簡報大綱 Note` + `GiGi 機器人設定圖` + `Puti 老師設定圖` + `手繪外框示範圖`。
+* **來源組合**：每個簡報由四個來源組合觸發——`操作講義 Note` + `GiGi 機器人設定圖` + `Puti 老師設定圖` + `Q版黑白手繪塗鴉風格設定圖`。
 * **設定方式**：直接編輯腳本頂部的四個設定區塊（`NOTEBOOK_ID`、`IP_SOURCE_IDS`、`JOBS`、`INTERVAL_SECONDS`）即可。
-* **取得 Source ID**：執行 `upload_outlines.py` 上傳大綱後，從終端機輸出中複製各來源的 `Source ID`。
+* **取得 Source ID**：執行 `upload_lectures.py` 上傳講義後，從終端機輸出中複製各來源的 `Source ID`。
 
 > [!TIP]
 > 每個 Slide Deck 的生成約需 2～5 分鐘不等，3 分鐘的間隔設計可避免被 NotebookLM 的後台速率限制卡死。

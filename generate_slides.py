@@ -7,11 +7,11 @@ generate_slides.py
   1. 編輯下方 NOTEBOOK_ID, IP_SOURCE_IDS, JOBS 三個設定區塊
   2. 執行: python generate_slides.py
 
-每個 Job 的來源組合：
-  - 簡報大綱 Note (含中文生圖提示詞)
-  - GiGi 機器人設定圖   (IP 角色參考)
-  - Puti 老師設定圖      (IP 角色參考)
-  - 手繪外框示範圖       (視覺風格參考)
+# 每個 Job 的來源組合：
+#   - 操作講義 Note (操作步驟說明)
+#   - GiGi 機器人設定圖   (IP 角色參考)
+#   - Puti 老師設定圖      (IP 角色參考)
+#   - Q版黑白手繪塗鴉風格設定圖 (視覺風格參考)
 
 間隔設定：每個簡報之間預設等待 3 分鐘（INTERVAL_SECONDS = 180），
 避免被 NotebookLM 後台速率限制卡死。
@@ -45,11 +45,11 @@ NOTEBOOK_ID = "343fffa5-573f-4d1f-9281-a612abe756df"
 # ============================================================
 GIGI_ID  = "3c090b83-38d8-4622-a4f8-0d911581afff"  # GiGi 機器人設定圖
 PUTI_ID  = "893e5c8e-5cf3-45c1-bae0-861e445851a9"  # Puti 老師設定圖
-FRAME_ID = "8ecaa418-fc5e-4e4e-a303-fdec9b8f016d"  # 手繪外框示範圖
+FRAME_ID = "8ecaa418-fc5e-4e4e-a303-fdec9b8f016d"  # Q版黑白手繪塗鴉風格設定圖
 
 # ============================================================
 # 設定區塊 3：待生成的簡報列表
-# 格式：("顯示名稱",  "簡報大綱 Note 的 Source ID")
+# 格式：("顯示名稱",  "操作講義 Note 的 Source ID")
 # ============================================================
 JOBS = [
     ("AI Agent基本功 EP05 三層", "8b71fd4c-a63f-4483-b456-efa6390894c7"),
@@ -73,8 +73,8 @@ print(f"每個間隔: {INTERVAL_SECONDS // 60} 分鐘")
 print(f"等待 {INTERVAL_SECONDS // 60} 分鐘後啟動第一個...\n")
 time.sleep(INTERVAL_SECONDS)
 
-for i, (name, outline_id) in enumerate(JOBS, 1):
-    source_ids = [outline_id, GIGI_ID, PUTI_ID, FRAME_ID]
+for i, (name, lecture_id) in enumerate(JOBS, 1):
+    source_ids = [lecture_id, GIGI_ID, PUTI_ID, FRAME_ID]
 
     print(f"[{i}/{len(JOBS)}] 正在啟動: {name}")
     try:
