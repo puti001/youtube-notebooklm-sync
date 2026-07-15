@@ -58,7 +58,7 @@ python generate_slides.py
 * **取得 Source ID**：執行 `upload_lectures.py` 上傳講義後，從終端機輸出中複製各來源的 `Source ID`。
 
 > [!TIP]
-> 每個 Slide Deck 的生成約需 2～5 分鐘不等，3 分鐘的間隔設計可避免被 NotebookLM 的後台速率限制卡死。
+> 每個 Slide Deck 的生成在雲端約需 10 分鐘左右。雖然手動連續生成可能可行，但為避免 Agent 每個動作太快被系統速率限制 (Rate Limit) 擋住，此處腳本預設了 3 分鐘的啟動間隔。
 
 
 ---

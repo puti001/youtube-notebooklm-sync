@@ -13,11 +13,11 @@ generate_slides.py
 #   - Puti 老師設定圖      (IP 角色參考)
 #   - Q版黑白手繪塗鴉風格設定圖 (視覺風格參考)
 
-間隔設定：每個簡報之間預設等待 3 分鐘（INTERVAL_SECONDS = 180），
-避免被 NotebookLM 後台速率限制卡死。
+間隔設定：每個簡報之間預設等待 3 分鐘（INTERVAL_SECONDS = 180）。
+每個簡報生成約需 10 分鐘左右，此 3 分鐘間隔能避免 Agent 執行太快被系統限制 (Rate Limit) 卡死。
 
 取得 Source ID 方式：
-  python upload_outlines.py   <-- 上傳大綱並顯示 ID
+  python upload_lectures.py   <-- 上傳講義並顯示 ID
   (或在 NotebookLM 來源列表中查看每個來源的 URL 末段)
 """
 
