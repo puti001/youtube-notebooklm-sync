@@ -65,9 +65,21 @@ python generate_slides.py
 
 ## 🤖 AI Agent 完整工作流 SOP
 
-### Step 1 → 逐字稿（`youtube_channel_sync.py` 自動完成）
+### Step 1 → 影片上傳至 NotebookLM 筆記本 (存檔留存)
 
-### Step 2 → 操作講義 SOP Prompt
+第一步不論是否從雲端擷取逐字稿，**一律先將 YouTube 影片 URL 上傳至 NotebookLM 筆記本中**，以保留完整的雲端知識庫檔案：
+```powershell
+nlm add url <NOTEBOOK_ID> <VIDEO_URL> --wait
+```
+
+### Step 2 → 取得與整理影片逐字稿
+
+透過同步腳本（如 `youtube_channel_sync.py` 或 `youtube_search.py`），依據以下三道防線獲取最乾淨的逐字稿文字檔：
+1. **本機字幕優先**：使用 `yt-dlp` 下載繁中字幕，1 秒內完成清洗去重。
+2. **NotebookLM 下載**：若本機無字幕，直接從 Step 1 上傳影片的轉譯來源中下載 Google 語音模型轉譯後的逐字稿。
+3. **離線聽寫防線**：若前兩者皆失效，下載音訊並呼叫本機 Whisper 聽寫。
+
+### Step 3 → 生成操作講義 SOP Prompt
 
 將逐字稿轉換為操作講義時，把以下 Prompt + 逐字稿內容一起餵給 AI Agent：
 
@@ -91,7 +103,7 @@ python generate_slides.py
 （貼上逐字稿）
 ```
 
-### Step 3 → 上傳講義與設定圖到 NotebookLM
+### Step 4 → 上傳講義與設定圖到 NotebookLM
 
 1. **執行講義上傳腳本**：
    ```bash
@@ -105,7 +117,7 @@ python generate_slides.py
    - `puti老師設定圖.png`
    - `Q版黑白手繪塗鴉風格設定圖.png`
 
-### Step 4 → 批次生成簡報 (直出模式)
+### Step 5 → 批次生成簡報 (直出模式)
 
 1. **設定任務清單**：
    編輯 `generate_slides.py`，在 `JOBS` 區塊中填入「顯示名稱」與剛剛上傳的「操作講義 Note 的 Source ID」。
